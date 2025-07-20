@@ -1,0 +1,26 @@
+# accounts.py.example - Account configuration template
+# Copy this file to 'accounts.py' and fill in your credentials
+# This file is ignored by Git for security
+
+# Account configurations
+ACCOUNTS = {
+    'account1': {
+        'username': 'your_email@example.com',
+        'password': 'your_password_here',
+        'region': 'us'  # us, uk, de, fr, jp, au, in
+    },
+    'account2': {
+        'username': 'another_email@example.com',
+        'password': 'another_password_here', 
+        'region': 'uk'
+    }
+}
+
+# Quick access functions
+def get_account(name):
+    """Get account configuration by name"""
+    return ACCOUNTS.get(name.lower())
+
+def list_accounts():
+    """List available account names"""
+    return list(ACCOUNTS.keys())

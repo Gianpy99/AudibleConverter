@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
-##### python audible-activator.py --username gianpy99@hotmail.it --password 38TqGb9rMjQs/M/ --l uk
-##### python audible-activator.py --username rubino.adriana@gmail.com --password M@rio6bellissimo! --l uk
+# Usage examples:
+# python audible-activator.py --username your_email@example.com --password your_password --l uk
+# python audible-activator.py --username your_email@example.com --password your_password --l de
+
+# Quick account selection (if accounts.py exists):
+# python audible-activator.py --account gianpaolo
+# python audible-activator.py --account adriana
 
 
 import os
@@ -21,6 +26,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from optparse import OptionParser
+
+# Try to import account configurations
+try:
+    from accounts import get_account, list_accounts
+    ACCOUNTS_AVAILABLE = True
+except ImportError:
+    ACCOUNTS_AVAILABLE = False
 
 PY3 = sys.version_info[0] == 3
 
@@ -210,9 +222,34 @@ if __name__ == "__main__":
                       dest="password",
                       default=False,
                       help="Audible password")
+    parser.add_option("--account",
+                      action="store",
+                      dest="account",
+                      default=None,
+                      help="Use predefined account from accounts.py (e.g., gianpaolo, adriana)")
     (options, args) = parser.parse_args()
 
-    if options.username and options.password:
+    # Handle account selection
+    if options.account:
+        if not ACCOUNTS_AVAILABLE:
+            print("Error: accounts.py not found. Create this file with your account configurations.")
+            sys.exit(1)
+        
+        account_config = get_account(options.account)
+        if not account_config:
+            print(f"Error: Account '{options.account}' not found.")
+            if ACCOUNTS_AVAILABLE:
+                print(f"Available accounts: {', '.join(list_accounts())}")
+            sys.exit(1)
+        
+        username = account_config['username']
+        password = account_config['password']
+        if not options.lang or options.lang == "us":  # Use account's region if lang not specified
+            options.lang = account_config.get('region', 'us')
+        
+        print(f"[*] Using account: {options.account} ({username}) - Region: {options.lang}")
+    
+    elif options.username and options.password:
         username = options.username
         password = options.password
     else:

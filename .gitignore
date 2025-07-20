@@ -1,1 +1,7 @@
 /tools
+# Configuration files with credentials
+audible-activator/config.py
+audible-activator/accounts.py
+*.blob
+__pycache__/
+*.pyc
